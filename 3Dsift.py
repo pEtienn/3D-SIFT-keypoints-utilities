@@ -23,6 +23,7 @@ from scipy.ndimage import gaussian_filter
 import pandas
 import subprocess
 import scipy.ndimage as ndi
+from pyflann import *
 
 class kI:
     """
