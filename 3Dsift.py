@@ -1,18 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Aug  4 13:42:16 2020
-
-@author: Etenne Pepyn
-"""
-
 
 # -*- coding: utf-8 -*-
 """
-Created on Tue Oct 22 16:16:02 2019
-import sys
-sys.argv=['',r"S:\HCP_NoSkullStrip_T1w\Keypoints_VoxelCoordinates\100307_T1w_NoSkullStrip.key"]
-execfile(r'S:\keySkullStripping\Python\visualizeFeatures.py')
-@author: Etenne Pepyn
+
+@author: Etienne Pepin
 """
 import os
 from pathlib import Path

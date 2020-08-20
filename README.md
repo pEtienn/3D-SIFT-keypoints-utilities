@@ -9,3 +9,12 @@ This repository contains:
 3. analysing and manipulating functions for keypoints
 
 This code was written for my thesis and is a compilation of the code most usefull for anyone working with 3D keypoints.
+
+The Python_visualize_keypoints directory contains code to visualize keypoints with Slicer. Use the following commands on Slicer to visualize keypoints:
+<pre><code>
+import sys
+sys.argv=['',path_of_keypoint_file]
+execfile(path_of_visualizeFeatures.py)
+</code></pre>
+
+Don't forget to put a r in front of the path to indicate that it is a raw string. ( r"S:\3D-SIFT-keypoints-utilities\Python_visualize_keypoints\visualizeMatches.py")
