@@ -17,4 +17,4 @@ sys.argv=['',path_of_keypoint_file]
 execfile(path_of_visualizeFeatures.py)
 </code></pre>
 
-Don't forget to put a r in front of the path to indicate that it is a raw string. ( r"S:\3D-SIFT-keypoints-utilities\Python_visualize_keypoints\visualizeMatches.py")
+Don't forget to put a r in front of the path to indicate that it is a raw string. ( r"S:\3D-SIFT-keypoints-utilities\Python_visualize_keypoints\visualizeFeatures.py")
