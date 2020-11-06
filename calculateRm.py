@@ -37,32 +37,35 @@ def GetDistanceFromBorder(brainMask,k):
          dst=-(r-1)
     return dst
 
-def GetRbStats(mKey,brainMask):
-    brainSize=brainMask.shape
+def measureRk(key,brainMask):
+    s=int((key[FS.kI.scale]))
+    j=np.log2(s/1.6)*3
+    sIPlus1=int((1.6*np.power(2,(j+1)/3)))
+    xyz=tuple(np.int32(key[FS.kI.XYZ]))
+
+    I0=np.zeros(brainSize)
+    I1=np.zeros(brainSize)
+
+    FS.drawSphere(I0,xyz[0],xyz[1],xyz[2],2*s)
+    FS.drawSphere(I1,xyz[0],xyz[1],xyz[2],2*sIPlus1)
+    sum0t=np.sum(I0)
+    sum1t=np.sum(I1)
+
+    I0g=gaussian_filter(I0,s)
+    I1g=gaussian_filter(I1,sIPlus1)
+
+    sum0m=np.sum(I0g[brainMask])
+    sum1m=np.sum(I1g[brainMask])
+    rk=((sum0m/sum0t)+(sum1m/sum1t))/2
+    return rk
+
+def GetRmStats(mKey,brainMask):
     mK=mKey
     stats=np.zeros((mK.shape[0],4))
     for i in range(mK.shape[0]):
         k=mK[i,:]
         sigma=k[FS.kI.scale]
-        s=int((k[FS.kI.scale]))
-        j=np.log2(s/1.6)*3
-        sIPlus1=int((1.6*np.power(2,(j+1)/3)))
-        xyz=tuple(np.int32(k[FS.kI.XYZ]))
-
-        I0=np.zeros(brainSize)
-        I1=np.zeros(brainSize)
-
-        FS.drawSphere(I0,xyz[0],xyz[1],xyz[2],2*s)
-        FS.drawSphere(I1,xyz[0],xyz[1],xyz[2],2*sIPlus1)
-        sum0t=np.sum(I0)
-        sum1t=np.sum(I1)
-
-        I0g=gaussian_filter(I0,s)
-        I1g=gaussian_filter(I1,sIPlus1)
-
-        sum0m=np.sum(I0g[brainMask])
-        sum1m=np.sum(I1g[brainMask])
-        rk=((sum0m/sum0t)+(sum1m/sum1t))/2
+        rk=measureRk(k,brainMask)
         distFromBorder=GetDistanceFromBorder(brainMask,k)
         stats[i,0]=rk
         stats[i,1]=distFromBorder/sigma
@@ -81,20 +84,20 @@ pVol=os.path.join(dImg,'OAS1_0001.hdr')
 pKey=os.path.join(dImg,'OAS1_0001.key')
 [v,h]=FS.ReadImage(pVol)
 mK=FS.ReadKeypoints(pKey)
-mK=FS.FilterKeyByRotation(mK) #keypoints with the same rotation have the same Rk
+mK=FS.FilterKeyByRotation(mK) #keypoints with the same rotation have the same Rm
 brainSize=v.shape
 
 brainMask=v>0
 
-NumberOfKeypointsToTest=20
+NumberOfKeypointsToTest=50 # put =mK.shape[0] to test all keypoints
 
-stats=GetRbStats(mK[0:NumberOfKeypointsToTest,:],brainMask)
+stats=GetRmStats(mK[0:NumberOfKeypointsToTest,:],brainMask)
 a1=stats[stats[:,2]!=20,:] #distance from border of 20 or more were not calculated to fasten the process
 plt.scatter(a1[:,1],a1[:,0],c=a1[:,3],s=(a1[:,3]**1.7)*1,alpha=0.3,cmap='tab20')
 cbar=plt.colorbar()
 cbar.set_label(r'$\sigma$', rotation=0)
 #cbar.ax.get_yaxis().labelpad = 15
-plt.title('$R_b$ vs. distance factor for skull-stripped brain keypoints')
+plt.title('$R_m$ vs. distance factor for skull-stripped brain keypoints')
 plt.xlabel(r'distance factor (distance to border/$\sigma$)')
-plt.ylabel('$R_b$')
+plt.ylabel('$R_m$')
 plt.show()
