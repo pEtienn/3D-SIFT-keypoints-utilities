@@ -10,7 +10,7 @@ The utility contains:
 
 This code was written for my thesis and is a compilation of the code most usefull for anyone working with 3D keypoints.
 
-The Python_visualize_keypoints directory contains code to visualize keypoints with Slicer. Use the following commands on Slicer to visualize keypoints:
+The Python_visualize_keypoints directory contains code to visualize keypoints with 3D Slicer. Use the following commands on 3D Slicer to visualize keypoints:
 <pre><code>
 import sys
 sys.argv=['',path_of_keypoint_file]
