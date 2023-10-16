@@ -1,9 +1,9 @@
 
 # -*- coding: utf-8 -*-
-"""
 
-@author: Etienne Pepin
-"""
+
+#@author: Etienne Pepin
+
 import os
 from pathlib import Path
 import numpy as np 
@@ -41,7 +41,7 @@ def ReadImage(pFile):
     """
     pFile=str(Path(pFile))
     img=nib.load(pFile)
-    arr=np.squeeze(img.get_fdata())
+    arr=np.array(np.squeeze(img.get_fdata()))
     h=img.header
     return[arr,h]    
     
@@ -109,7 +109,7 @@ def GetResolutionHeaderFromKeyFile(pFile):
     resolution array of shape (3,) and header as a string
 
     """
-    rReso=re.compile('(\d+ \d+ \d+)')
+    rReso=re.compile(r'(\d+ \d+ \d+)')
     
     file= open (pFile,'r')
     #skI
@@ -156,7 +156,7 @@ def WriteKeyFile(path,mKey,header='default'):
         \n#Feature Coordinate Space: millimeters (gto_xyz)\nFeatures: " +str(mKey.shape[0])+"\
         \nScale-space location[x y z scale] orientation[o11 o12 o13 o21 o22 o23 o31 o32 o32] 2nd moment eigenvalues[e1 e2 e3] info flag[i1] descriptor[d1 .. d64]\n"
     else:
-        p=re.compile('Features: \d+')
+        p=re.compile(r'Features: \d+')
         header=p.sub('Features: '+str(mKey.shape[0])+' ',header)
     fW=open(path,'w',newline='\n')
     fW.write(header)
@@ -173,7 +173,7 @@ def WriteKeyFile(path,mKey,header='default'):
     fW.close()
 
 
-def ExtractAllKeys(dVolume,dDst,pExecutable=r"S:\75mmHCP\featExtract.exe",volumeID='(\d{6})[_.]'):
+def ExtractAllKeys(dVolume,dDst,pExecutable=r"S:\75mmHCP\featExtract.exe",volumeID=r'(\d{6})[_.]'):
     """
     Extract keypoints from all image volumes in dVolume.
 
@@ -226,6 +226,16 @@ def FilterKeyByClass(mKey,classValue):
 
     """
     return mKey[np.int32(mKey[:,kI.flag])&15==classValue,:]
+
+def FilterKeyBySign(mKey,sign=True):
+    """
+    Returns keys with flags equal to classValue
+
+    """
+    if sign==True:
+        return mKey[np.int32(mKey[:,kI.flag])&16==16,:]
+    else:
+        return mKey[~np.int32(mKey[:,kI.flag])&16==16,:]
 
 def FilterKeyByRotation(mKey,rotation=False):
     """
@@ -470,7 +480,7 @@ def ApplyFuncToKeyFile(fct,args):
     WriteKeyFile(args[0],k1,h)
     
 def ApplyFuncToKeyInDirectory(fct,args,dDst=None):
-    """
+    r"""
     Apply function to all keypoint file in a directory. Either modifies the original
     or create a modified version in dDst
     
@@ -502,8 +512,8 @@ def ApplyFuncToKeyInDirectory(fct,args,dDst=None):
             k1=fct(k,*args[1:])
             WriteKeyFile(os.path.join(dDst,f),k1,h)
             
-def ApplyFuncToDirectoryPair(fct,args,dDst,nameFormat='(.+)\.'):
-    """
+def ApplyFuncToDirectoryPair(fct,args,dDst,nameFormat=r'(.+)\.'):
+    r"""
     Execute functions needing 2 file input. First directory need to contain .key  files.
     Second directory can contain either .key files or masks as medical skull-stripped images.
     
